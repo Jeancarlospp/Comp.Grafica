@@ -12,9 +12,27 @@ namespace Ejercicio2
 {
     public partial class Cuadrado : Form
     {
-        public Cuadrado()
+        private static Cuadrado instance = null;
+        private static readonly object lockObject = new object();
+
+        private Cuadrado()
         {
             InitializeComponent();
+        }
+
+        public static Cuadrado GetInstance()
+        {
+            if (instance == null || instance.IsDisposed)
+            {
+                lock (lockObject)
+                {
+                    if (instance == null || instance.IsDisposed)
+                    {
+                        instance = new Cuadrado();
+                    }
+                }
+            }
+            return instance;
         }
 
         private void btnCalcular_Click(object sender, EventArgs e)

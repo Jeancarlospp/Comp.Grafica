@@ -27,44 +27,50 @@ namespace Ejercicio2
 
         private void cuadradoToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            Cuadrado fmr1 = new Cuadrado();
+            Cuadrado fmr1 =  Cuadrado.GetInstance();
             fmr1.MdiParent = this;
-            fmr1.Show();    
+            fmr1.Show();
+            fmr1.Activate();
         }
 
         private void trianguloToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            Triangulo fmr1 = new Triangulo();
+            Triangulo fmr1 = Triangulo.GetInstance();
             fmr1.MdiParent = this;
             fmr1.Show();
+            fmr1.Activate();
         }
 
         private void romboToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            Rombo fmr1 = new Rombo();
+            Rombo fmr1 = Rombo.GetInstance();
             fmr1.MdiParent = this;
             fmr1.Show();
+            fmr1.Activate();
         }
 
         private void romboideToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            Romboide fmr1 = new Romboide();
+            Romboide fmr1 = Romboide.GetInstance();
             fmr1.MdiParent = this;
-            fmr1.Show();    
+            fmr1.Show();
+            fmr1.Activate();
         }
 
         private void trapecioToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            Trapecio fmr1 = new Trapecio();
+            Trapecio fmr1 = Trapecio.GetInstance();
             fmr1.MdiParent = this;
             fmr1.Show();
+            fmr1.Activate();
         }
 
         private void circuloToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            Circulo fmr1 = new Circulo();
+            Circulo fmr1 = Circulo.GetInstance();
             fmr1.MdiParent = this;
             fmr1.Show();
+            fmr1.Activate();
         }
     }
 }

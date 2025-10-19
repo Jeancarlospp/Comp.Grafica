@@ -12,9 +12,27 @@ namespace Ejercicio2
 {
     public partial class Rombo : Form
     {
-        public Rombo()
+        private static Rombo instance = null;
+        private static readonly object lockObject = new object();
+
+        private Rombo()
         {
             InitializeComponent();
+        }
+
+        public static Rombo GetInstance()
+        {
+            if (instance == null || instance.IsDisposed)
+            {
+                lock (lockObject)
+                {
+                    if (instance == null || instance.IsDisposed)
+                    {
+                        instance = new Rombo();
+                    }
+                }
+            }
+            return instance;
         }
 
         private void btnCalcular_Click(object sender, EventArgs e)

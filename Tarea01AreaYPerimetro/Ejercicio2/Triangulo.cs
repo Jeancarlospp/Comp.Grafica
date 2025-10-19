@@ -12,9 +12,27 @@ namespace Ejercicio2
 {
     public partial class Triangulo : Form
     {
-        public Triangulo()
+        private static Triangulo instance = null;
+        private static readonly object lockObject = new object();
+
+        private Triangulo()
         {
             InitializeComponent();
+        }
+
+        public static Triangulo GetInstance()
+        {
+            if (instance == null || instance.IsDisposed)
+            {
+                lock (lockObject)
+                {
+                    if (instance == null || instance.IsDisposed)
+                    {
+                        instance = new Triangulo();
+                    }
+                }
+            }
+            return instance;
         }
 
         private void btnCalcular_Click(object sender, EventArgs e)

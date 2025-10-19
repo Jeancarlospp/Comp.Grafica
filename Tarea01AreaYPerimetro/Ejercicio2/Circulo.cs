@@ -12,9 +12,27 @@ namespace Ejercicio2
 {
     public partial class Circulo : Form
     {
-        public Circulo()
+        private static Circulo instance = null;
+        private static readonly object lockObject = new object();
+
+        private Circulo()
         {
             InitializeComponent();
+        }
+
+        public static Circulo GetInstance()
+        {
+            if (instance == null || instance.IsDisposed)
+            {
+                lock(lockObject)
+                {
+                    if(instance == null || instance.IsDisposed)
+                    {
+                        instance = new Circulo();
+                    }
+                }
+            }
+            return instance;
         }
 
         private void label1_Click(object sender, EventArgs e)

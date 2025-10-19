@@ -12,9 +12,26 @@ namespace Ejercicio2
 {
     public partial class Trapecio : Form
     {
-        public Trapecio()
+        private static Trapecio instance = null;
+        private static readonly object lockObject = new object();
+
+        private Trapecio()
         {
             InitializeComponent();
+        }
+        public static Trapecio GetInstance()
+        {
+            if(instance == null|| instance.IsDisposed)
+            {
+                lock (lockObject)
+                {
+                    if(instance == null || instance.IsDisposed)
+                    {
+                        instance = new Trapecio();
+                    }
+                }
+            }
+            return instance;
         }
 
         private void btnCalcular_Click(object sender, EventArgs e)

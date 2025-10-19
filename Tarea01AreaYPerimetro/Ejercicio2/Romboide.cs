@@ -5,6 +5,7 @@ using System.Data;
 using System.Drawing;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
@@ -12,9 +13,27 @@ namespace Ejercicio2
 {
     public partial class Romboide : Form
     {
-        public Romboide()
+        private static Romboide instance = null;
+        private static readonly object lockObject = new object();
+
+        private Romboide()
         {
             InitializeComponent();
+        }
+
+        public static Romboide GetInstance()
+        {
+            if (instance == null || instance.IsDisposed)
+            {
+                lock (lockObject)
+                {
+                    if (instance == null || instance.IsDisposed)
+                    {
+                        instance = new Romboide();
+                    }
+                }
+            }
+            return instance;
         }
 
         private void btnCalcular_Click(object sender, EventArgs e)
