@@ -58,19 +58,25 @@
     <Compile Include="Algorithms\LineDrawing\BresenhamLineAlgorithm.cs" />
     <Compile Include="Algorithms\LineDrawing\DDAAlgorithm.cs" />
     <Compile Include="Algorithms\LineDrawing\MidpointLineAlgorithm.cs" />
+    <Compile Include="Algorithms\PolygonClipping\CyrusBeckAlgorithm.cs" />
+    <Compile Include="Algorithms\PolygonClipping\SutherlandHodgmanAlgorithm.cs" />
+    <Compile Include="Algorithms\PolygonClipping\WeilerAthertonAlgorithm.cs" />
     <Compile Include="Core\Algorithms\CircleDrawingAlgorithm.cs" />
     <Compile Include="Core\Algorithms\FillAlgorithm.cs" />
     <Compile Include="Core\Algorithms\LineClippingAlgorithm.cs" />
     <Compile Include="Core\Algorithms\LineDrawingAlgorithm.cs" />
+    <Compile Include="Core\Algorithms\PolygonClippingAlgorithm.cs" />
     <Compile Include="Core\Interfaces\ICircleDrawingAlgorithm.cs" />
     <Compile Include="Core\Interfaces\IFillAlgorithm.cs" />
     <Compile Include="Core\Interfaces\ILineClippingAlgorithm.cs" />
     <Compile Include="Core\Interfaces\ILineDrawingAlgorithm.cs" />
+    <Compile Include="Core\Interfaces\IPolygonClippingAlgorithm.cs" />
     <Compile Include="Core\Managers\CoordinateDisplayManager.cs" />
     <Compile Include="Core\Models\CanvasGrid.cs" />
     <Compile Include="Core\Models\ClippedLine.cs" />
     <Compile Include="Core\Models\ClipRectangle.cs" />
     <Compile Include="Core\Models\PixelPoint.cs" />
+    <Compile Include="Core\Models\Polygon.cs" />
     <Compile Include="Core\Rendering\PixelRenderer.cs" />
     <Compile Include="fmrHome.cs">
       <SubType>Form</SubType>
@@ -98,6 +104,10 @@
     <Compile Include="UI\Forms\frmLineDrawing.Designer.cs">
       <DependentUpon>frmLineDrawing.cs</DependentUpon>
     </Compile>
+    <Compile Include="UI\Forms\frmPolygonClipping.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="UI\Forms\frmPolygonClipping.Designer.cs" />
     <EmbeddedResource Include="fmrHome.resx">
       <DependentUpon>fmrHome.cs</DependentUpon>
     </EmbeddedResource>
@@ -123,8 +133,6 @@
   <ItemGroup>
     <None Include="App.config" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Algorithms\PolygonClipping\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

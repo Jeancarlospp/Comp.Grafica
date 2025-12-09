@@ -62,9 +62,8 @@ namespace AlgoritmosClasicos
         /// </summary>
         private void mniRecortePoligonos_Click(object sender, EventArgs e)
         {
-            // Funcionalidad no implementada
-            MessageBox.Show("Funcionalidad de Recorte de Polígonos - Próximamente", 
-                "En Desarrollo", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            var frmPolygonClipping = new frmPolygonClipping();
+            frmPolygonClipping.ShowDialog();
         }
 
         private void frmHome_Load(object sender, EventArgs e)
