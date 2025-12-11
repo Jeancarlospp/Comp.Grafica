@@ -37,31 +37,25 @@ namespace AlgoritmosClasicos.Algorithms.Fill
 
             Color startColor = grid[startPoint.X, startPoint.Y];
 
-            // Si el punto inicial ya es del color de borde o relleno, no hacer nada
             if (ColorsEqual(startColor, boundaryColor) || ColorsEqual(startColor, fillColor))
                 return filledPoints;
 
-            // Iniciar con el punto semilla
             queue.Enqueue(startPoint);
             visited[startPoint.X, startPoint.Y] = true;
 
-            // Procesamiento BFS
             while (queue.Count > 0)
             {
                 var currentPoint = queue.Dequeue();
 
-                // Rellenar el punto actual
                 grid[currentPoint.X, currentPoint.Y] = fillColor;
                 filledPoints.Add(currentPoint);
 
-                // Procesar vecinos de 4 direcciones
                 var neighbors = GetNeighbors4(currentPoint, width, height);
 
                 foreach (var neighbor in neighbors)
                 {
                     Color neighborColor = grid[neighbor.X, neighbor.Y];
 
-                    // Si no ha sido visitado, no es color de borde y no es color de relleno
                     if (!visited[neighbor.X, neighbor.Y] &&
                         !ColorsEqual(neighborColor, boundaryColor) &&
                         !ColorsEqual(neighborColor, fillColor))

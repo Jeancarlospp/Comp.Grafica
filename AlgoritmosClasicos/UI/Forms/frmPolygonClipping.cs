@@ -12,8 +12,8 @@ namespace AlgoritmosClasicos.UI.Forms
 {
     /// <summary>
     /// Formulario para demostrar algoritmos de recorte de polígonos.
-    /// Permite dibujar un polígono por vértices y aplicar algoritmos de recorte contra una ventana rectangular predefinida.
-    /// Reutiliza componentes globales: PixelRenderer y algoritmo de líneas.
+    /// Permite dibujar un polígono por vértices y aplicar algoritmos de recorte contra una ventana de recorte.
+    /// Con Cyrus-Beck, demuestra versatilidad permitiendo cambiar entre rectángulo y triángulo.
     /// </summary>
     public partial class frmPolygonClipping : Form
     {
@@ -28,11 +28,13 @@ namespace AlgoritmosClasicos.UI.Forms
         // Polígono sujeto y ventana de recorte
         private Polygon _subjectPolygon;
         private ClipRectangle _clipRectangle;
+        private ClipShape _clipShape;  // Para Cyrus-Beck con triángulo
         private Polygon _resultPolygon;
         
         // Estado
         private bool _polygonClosed;
         private bool _clippingApplied;
+        private bool _useTriangle;  // Para Cyrus-Beck
         
         private const int PIXEL_SIZE = 5;
         private const int CANVAS_WIDTH = 150;
@@ -58,7 +60,7 @@ namespace AlgoritmosClasicos.UI.Forms
             _algorithms = new Dictionary<string, IPolygonClippingAlgorithm>
             {
                 { "Sutherland-Hodgman", new SutherlandHodgmanAlgorithm() },
-                { "Weiler-Atherton", new WeilerAthertonAlgorithm() },
+                { "Liang-Barsky", new LiangBarskyPolygonAlgorithm() },
                 { "Cyrus-Beck", new CyrusBeckAlgorithm() }
             };
 
@@ -68,11 +70,16 @@ namespace AlgoritmosClasicos.UI.Forms
             // Inicializar polígono y estado
             _subjectPolygon = new Polygon();
             _clipRectangle = new ClipRectangle(CLIP_X_MIN, CLIP_Y_MIN, CLIP_X_MAX, CLIP_Y_MAX);
+            _clipShape = ClipShape.FromRectangle(_clipRectangle);
             _polygonClosed = false;
             _clippingApplied = false;
+            _useTriangle = false;
 
             InitializeComponents();
             LoadAlgorithms();
+            
+            // Suscribir evento de cambio de algoritmo
+            cmbAlgorithm.SelectedIndexChanged += cmbAlgorithm_SelectedIndexChanged;
         }
 
         private void InitializeComponents()
@@ -88,8 +95,8 @@ namespace AlgoritmosClasicos.UI.Forms
 
             _pixelRenderer.DrawGrid(_canvasGraphics, CANVAS_WIDTH, CANVAS_HEIGHT);
             
-            // Dibujar el rectángulo de recorte predefinido
-            DrawClipRectangle();
+            // Dibujar la forma de recorte predefinida
+            DrawClipShape();
             
             pctCanvas.Refresh();
         }
@@ -102,6 +109,54 @@ namespace AlgoritmosClasicos.UI.Forms
                 cmbAlgorithm.Items.Add(algo.Name);
             }
             cmbAlgorithm.SelectedIndex = 0;
+        }
+
+        /// <summary>
+        /// Evento al cambiar el algoritmo seleccionado.
+        /// Muestra el selector de forma solo si es Cyrus-Beck.
+        /// </summary>
+        private void cmbAlgorithm_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            bool isCyrusBeck = cmbAlgorithm.SelectedItem.ToString() == "Cyrus-Beck";
+            grpShapeSelector.Visible = isCyrusBeck;
+            
+            if (isCyrusBeck)
+            {
+                lblWindowInfo.Text = "CYRUS-BECK:\r\nSoporta multiples formas!\r\n\r\n";
+            }
+            else
+            {
+                lblWindowInfo.Text = "Rectangulo predefinido:\r\n\r\nX: 30 - 120\r\nY: 20 - 60\r\n\r\n" +
+                    "(Se dibuja automaticamente en rojo)";
+            }
+        }
+
+        /// <summary>
+        /// Evento al cambiar la forma seleccionada (rectángulo/triángulo).
+        /// </summary>
+        private void rbShape_CheckedChanged(object sender, EventArgs e)
+        {
+            if (!_clippingApplied)
+            {
+                _useTriangle = rbTriangle.Checked;
+                
+                // Actualizar clip shape
+                if (_useTriangle)
+                {
+                    _clipShape = ClipShape.CreatePredefinedTriangle();
+                }
+                else
+                {
+                    _clipShape = ClipShape.FromRectangle(_clipRectangle);
+                }
+                
+                // Redibujar
+                _canvasGraphics.Clear(BACKGROUND_COLOR);
+                _pixelRenderer.DrawGrid(_canvasGraphics, CANVAS_WIDTH, CANVAS_HEIGHT);
+                DrawClipShape();
+                RedrawSubjectPolygon();
+                pctCanvas.Refresh();
+            }
         }
 
         /// <summary>
@@ -198,25 +253,30 @@ namespace AlgoritmosClasicos.UI.Forms
                     return;
                 }
 
-                // Obtener algoritmo
                 var selectedAlgoName = cmbAlgorithm.SelectedItem.ToString();
                 var algorithm = GetAlgorithmByName(selectedAlgoName);
 
-                // Aplicar recorte
-                _resultPolygon = algorithm.ClipPolygon(_subjectPolygon, _clipRectangle);
+                // Si es Cyrus-Beck y se seleccionó triángulo, usar ClipShape
+                if (selectedAlgoName == "Cyrus-Beck" && _useTriangle)
+                {
+                    var cyrusBeck = algorithm as CyrusBeckAlgorithm;
+                    _resultPolygon = cyrusBeck.ClipPolygonAgainstShape(_subjectPolygon, _clipShape);
+                }
+                else
+                {
+                    _resultPolygon = algorithm.ClipPolygon(_subjectPolygon, _clipRectangle);
+                }
                 
-                // Marcar como aplicado
                 _clippingApplied = true;
-
-                // Redibujar todo
                 RedrawAll();
-
-                // Mostrar resultado
                 DisplayResult();
 
+                string shapeInfo = (_useTriangle && selectedAlgoName == "Cyrus-Beck") 
+                    ? " contra TRIANGULO" : " contra rectangulo";
+                
                 string message = _resultPolygon != null && _resultPolygon.VertexCount > 0
-                    ? $"Recorte completado.\nPoligono resultante: {_resultPolygon.VertexCount} vertices."
-                    : "El poligono esta completamente fuera de la ventana.";
+                    ? $"Recorte completado{shapeInfo}.\nPoligono resultante: {_resultPolygon.VertexCount} vertices."
+                    : $"El poligono esta completamente fuera de la ventana{shapeInfo}.";
 
                 MessageBox.Show(message, "Recorte Aplicado", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
@@ -240,30 +300,15 @@ namespace AlgoritmosClasicos.UI.Forms
         }
 
         /// <summary>
-        /// Dibuja el rectángulo de recorte predefinido.
+        /// Dibuja la forma de recorte (rectángulo o triángulo según selección).
         /// </summary>
-        private void DrawClipRectangle()
+        private void DrawClipShape()
         {
-            // Dibujar los 4 bordes del rectángulo
-            DrawLineUsingAlgorithm(
-                new PixelPoint(_clipRectangle.XMin, _clipRectangle.YMin),
-                new PixelPoint(_clipRectangle.XMax, _clipRectangle.YMin),
-                CLIP_WINDOW_COLOR);
-
-            DrawLineUsingAlgorithm(
-                new PixelPoint(_clipRectangle.XMax, _clipRectangle.YMin),
-                new PixelPoint(_clipRectangle.XMax, _clipRectangle.YMax),
-                CLIP_WINDOW_COLOR);
-
-            DrawLineUsingAlgorithm(
-                new PixelPoint(_clipRectangle.XMax, _clipRectangle.YMax),
-                new PixelPoint(_clipRectangle.XMin, _clipRectangle.YMax),
-                CLIP_WINDOW_COLOR);
-
-            DrawLineUsingAlgorithm(
-                new PixelPoint(_clipRectangle.XMin, _clipRectangle.YMax),
-                new PixelPoint(_clipRectangle.XMin, _clipRectangle.YMin),
-                CLIP_WINDOW_COLOR);
+            for (int i = 0; i < _clipShape.VertexCount; i++)
+            {
+                var edge = _clipShape.GetEdge(i);
+                DrawLineUsingAlgorithm(edge.Start, edge.End, CLIP_WINDOW_COLOR);
+            }
         }
 
         /// <summary>
@@ -282,6 +327,35 @@ namespace AlgoritmosClasicos.UI.Forms
         }
 
         /// <summary>
+        /// Redibuja el polígono sujeto sin borrarlo.
+        /// </summary>
+        private void RedrawSubjectPolygon()
+        {
+            if (_subjectPolygon.VertexCount > 0)
+            {
+                // Dibujar vértices
+                for (int i = 0; i < _subjectPolygon.VertexCount; i++)
+                {
+                    _pixelRenderer.DrawPixel(_canvasGraphics, _subjectPolygon.GetVertex(i), VERTEX_COLOR);
+                }
+                
+                // Dibujar aristas
+                for (int i = 0; i < _subjectPolygon.VertexCount - 1; i++)
+                {
+                    DrawLineUsingAlgorithm(_subjectPolygon.GetVertex(i), 
+                        _subjectPolygon.GetVertex(i + 1), POLYGON_COLOR);
+                }
+                
+                // Si está cerrado, dibujar última arista
+                if (_polygonClosed)
+                {
+                    DrawLineUsingAlgorithm(_subjectPolygon.GetVertex(_subjectPolygon.VertexCount - 1),
+                        _subjectPolygon.GetVertex(0), POLYGON_COLOR);
+                }
+            }
+        }
+
+        /// <summary>
         /// Redibuja todo después del recorte.
         /// </summary>
         private void RedrawAll()
@@ -289,10 +363,8 @@ namespace AlgoritmosClasicos.UI.Forms
             _canvasGraphics.Clear(BACKGROUND_COLOR);
             _pixelRenderer.DrawGrid(_canvasGraphics, CANVAS_WIDTH, CANVAS_HEIGHT);
 
-            // Dibujar ventana de recorte
-            DrawClipRectangle();
+            DrawClipShape();
 
-            // Dibujar polígono resultante en verde
             if (_resultPolygon != null && _resultPolygon.VertexCount > 0)
             {
                 DrawPolygon(_resultPolygon, RESULT_COLOR);
@@ -341,10 +413,14 @@ namespace AlgoritmosClasicos.UI.Forms
             _resultPolygon = null;
             _polygonClosed = false;
             _clippingApplied = false;
+            _useTriangle = false;
+            rbRectangle.Checked = true;
+
+            _clipShape = ClipShape.FromRectangle(_clipRectangle);
 
             _canvasGraphics.Clear(BACKGROUND_COLOR);
             _pixelRenderer.DrawGrid(_canvasGraphics, CANVAS_WIDTH, CANVAS_HEIGHT);
-            DrawClipRectangle();
+            DrawClipShape();
             pctCanvas.Refresh();
 
             lstCoordinates.Items.Clear();

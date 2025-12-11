@@ -6,42 +6,39 @@ using AlgoritmosClasicos.Core.Models;
 namespace AlgoritmosClasicos.Algorithms.PolygonClipping
 {
     /// <summary>
-    /// Implementación REAL del algoritmo de Cyrus-Beck para recorte de polígonos.
+    /// Implementación del algoritmo de Liang-Barsky para recorte de polígonos.
     /// 
     /// FUNCIONAMIENTO:
-    /// - Usa normales de bordes y producto punto para determinar visibilidad.
-    /// - Recorta cada arista del polígono contra cada borde de la ventana.
-    /// - Calcula parámetros t de entrada y salida usando producto punto.
-    /// - Funciona con CUALQUIER polígono convexo como ventana (no solo rectángulos).
+    /// - Extiende el algoritmo de Liang-Barsky de recorte de líneas a polígonos.
+    /// - Recorta cada arista del polígono independientemente usando forma paramétrica.
+    /// - Usa parámetros t de entrada y salida para determinar segmentos visibles.
+    /// - Más eficiente que Sutherland-Hodgman con menos cálculos de intersección.
+    /// - Reutiliza la lógica matemática del algoritmo de Liang-Barsky para líneas.
     /// 
     /// VENTAJAS:
-    /// - Generalizable a ventanas de cualquier forma convexa.
-    /// - Conceptualmente elegante (usa geometría vectorial).
-    /// - Demuestra versatilidad con triángulos, pentágonos, etc.
+    /// - Simple y eficiente (menos cálculos que Sutherland-Hodgman)
+    /// - Evita división por cero y maneja líneas paralelas
+    /// - Reutiliza código existente
     /// </summary>
-    public class CyrusBeckAlgorithm : PolygonClippingAlgorithm
+    public class LiangBarskyPolygonAlgorithm : PolygonClippingAlgorithm
     {
-        public override string Name => "Cyrus-Beck";
+        public override string Name => "Liang-Barsky";
 
         public override string Description =>
-            "Algoritmo versátil basado en normales de bordes y producto punto. " +
-            "Funciona con CUALQUIER polígono convexo como ventana de recorte, " +
-            "no solo rectángulos. Demuestra su poder con formas triangulares.";
+            "Algoritmo eficiente que extiende Liang-Barsky de líneas a polígonos. Recorta cada arista " +
+            "usando forma paramétrica con parámetros t de entrada/salida. Menos cálculos que Sutherland-Hodgman.";
 
         protected override Polygon ClipPolygonImplementation(Polygon subjectPolygon, ClipRectangle clipRectangle)
-        {
-            var clipShape = ClipShape.FromRectangle(clipRectangle);
-            return ClipPolygonAgainstShape(subjectPolygon, clipShape);
-        }
-
-        public Polygon ClipPolygonAgainstShape(Polygon subjectPolygon, ClipShape clipShape)
         {
             List<PixelPoint> clippedVertices = new List<PixelPoint>();
 
             for (int i = 0; i < subjectPolygon.VertexCount; i++)
             {
                 var edge = subjectPolygon.GetEdge(i);
-                var clippedEdge = ClipEdgeCyrusBeck(edge.Item1, edge.Item2, clipShape);
+                var p1 = edge.Item1;
+                var p2 = edge.Item2;
+
+                var clippedEdge = ClipEdgeLiangBarsky(p1, p2, clipRectangle);
 
                 if (clippedEdge != null)
                 {
@@ -61,12 +58,12 @@ namespace AlgoritmosClasicos.Algorithms.PolygonClipping
             clippedVertices = RemoveConsecutiveDuplicates(clippedVertices);
 
             if (clippedVertices.Count < 3)
-                return null;
+                return null; 
 
             return new Polygon(clippedVertices);
         }
 
-        private Tuple<PixelPoint, PixelPoint> ClipEdgeCyrusBeck(PixelPoint p1, PixelPoint p2, ClipShape clipShape)
+        private Tuple<PixelPoint, PixelPoint> ClipEdgeLiangBarsky(PixelPoint p1, PixelPoint p2, ClipRectangle rect)
         {
             float x1 = p1.X;
             float y1 = p1.Y;
@@ -76,66 +73,52 @@ namespace AlgoritmosClasicos.Algorithms.PolygonClipping
             float dx = x2 - x1;
             float dy = y2 - y1;
 
-            float tEnter = 0.0f;
-            float tExit = 1.0f;
+            float t0 = 0.0f;  
+            float t1 = 1.0f;  
 
-            for (int i = 0; i < clipShape.VertexCount; i++)
+            float[] p = { -dx, dx, -dy, dy };
+            float[] q = { x1 - rect.XMin, rect.XMax - x1, 
+                         y1 - rect.YMin, rect.YMax - y1 };
+
+            for (int i = 0; i < 4; i++)
             {
-                var edge = clipShape.GetEdge(i);
-                var edgeStart = edge.Start;
-                var edgeEnd = edge.End;
-
-                float edgeDx = edgeEnd.X - edgeStart.X;
-                float edgeDy = edgeEnd.Y - edgeStart.Y;
-
-                float normalX = -edgeDy;
-                float normalY = edgeDx;
-
-                float wx = x1 - edgeStart.X;
-                float wy = y1 - edgeStart.Y;
-
-                float dotProduct = dx * normalX + dy * normalY;
-
-                float dotProductW = wx * normalX + wy * normalY;
-
-                if (dotProduct == 0)
+                if (p[i] == 0)
                 {
-                    if (dotProductW < 0)
+                    if (q[i] < 0)
                     {
                         return null;
                     }
                 }
                 else
                 {
-                    float t = -dotProductW / dotProduct;
+                    float t = q[i] / p[i];
 
-                    if (dotProduct < 0)
+                    if (p[i] < 0)
                     {
-                        tEnter = Math.Max(tEnter, t);
+                        t0 = Math.Max(t0, t);
                     }
                     else
                     {
-                        tExit = Math.Min(tExit, t);
+                        t1 = Math.Min(t1, t);
                     }
                 }
             }
 
-            if (tEnter > tExit)
+            if (t0 > t1)
             {
                 return null;
             }
 
-            int clippedX1 = (int)Math.Round(x1 + tEnter * dx);
-            int clippedY1 = (int)Math.Round(y1 + tEnter * dy);
-            int clippedX2 = (int)Math.Round(x1 + tExit * dx);
-            int clippedY2 = (int)Math.Round(y1 + tExit * dy);
+            int clippedX1 = (int)Math.Round(x1 + t0 * dx);
+            int clippedY1 = (int)Math.Round(y1 + t0 * dy);
+            int clippedX2 = (int)Math.Round(x1 + t1 * dx);
+            int clippedY2 = (int)Math.Round(y1 + t1 * dy);
 
             return new Tuple<PixelPoint, PixelPoint>(
                 new PixelPoint(clippedX1, clippedY1),
                 new PixelPoint(clippedX2, clippedY2)
             );
         }
-
 
         private List<PixelPoint> RemoveConsecutiveDuplicates(List<PixelPoint> vertices)
         {
@@ -153,7 +136,6 @@ namespace AlgoritmosClasicos.Algorithms.PolygonClipping
                 }
             }
 
-            // Verificar el último con el primero
             if (result.Count > 1 && result[result.Count - 1].Equals(result[0]))
             {
                 result.RemoveAt(result.Count - 1);

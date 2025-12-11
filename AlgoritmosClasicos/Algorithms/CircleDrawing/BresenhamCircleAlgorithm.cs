@@ -29,19 +29,15 @@ namespace AlgoritmosClasicos.Algorithms.CircleDrawing
 
             int x = 0;
             int y = radius;
-            
-            // Parámetro de decisión inicial
+   
             int d = 3 - 2 * radius;
 
-            // Agregar los puntos iniciales (simetría de 8 vías)
-            AddSymmetricPoints(points, center, x, y);
 
-            // Iterar mientras x <= y (solo 1/8 del círculo)
+            AddSymmetricPoints(points, center, x, y);
             while (x <= y)
             {
                 x++;
 
-                // Actualizar y y el parámetro de decisión según la condición
                 if (d > 0)
                 {
                     y--;
@@ -52,11 +48,9 @@ namespace AlgoritmosClasicos.Algorithms.CircleDrawing
                     d = d + 4 * x + 6;
                 }
 
-                // Agregar los 8 puntos simétricos
                 AddSymmetricPoints(points, center, x, y);
             }
 
-            // Ordenar puntos en sentido horario para mejor visualización paso a paso
             return SortPointsClockwise(points, center);
         }
     }

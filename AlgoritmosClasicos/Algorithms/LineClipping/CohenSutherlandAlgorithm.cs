@@ -35,7 +35,6 @@ namespace AlgoritmosClasicos.Algorithms.LineClipping
             int x1 = end.X;
             int y1 = end.Y;
 
-            // Calcular códigos de región para ambos puntos
             int code0 = ComputeCode(x0, y0, clipRect);
             int code1 = ComputeCode(x1, y1, clipRect);
 
@@ -45,50 +44,41 @@ namespace AlgoritmosClasicos.Algorithms.LineClipping
             {
                 if ((code0 | code1) == 0)
                 {
-                    // Ambos puntos dentro - aceptar
                     accept = true;
                     break;
                 }
                 else if ((code0 & code1) != 0)
                 {
-                    // Ambos puntos en la misma región externa - rechazar
                     break;
                 }
                 else
                 {
-                    // Línea parcialmente dentro - calcular intersección
+     
                     int x = 0, y = 0;
 
-                    // Seleccionar el punto que está fuera
                     int codeOut = code0 != 0 ? code0 : code1;
 
-                    // Encontrar punto de intersección
                     if ((codeOut & TOP) != 0)
                     {
-                        // Intersección con borde superior
                         x = x0 + (x1 - x0) * (clipRect.YMax - y0) / (y1 - y0);
                         y = clipRect.YMax;
                     }
                     else if ((codeOut & BOTTOM) != 0)
                     {
-                        // Intersección con borde inferior
                         x = x0 + (x1 - x0) * (clipRect.YMin - y0) / (y1 - y0);
                         y = clipRect.YMin;
                     }
                     else if ((codeOut & RIGHT) != 0)
                     {
-                        // Intersección con borde derecho
                         y = y0 + (y1 - y0) * (clipRect.XMax - x0) / (x1 - x0);
                         x = clipRect.XMax;
                     }
                     else if ((codeOut & LEFT) != 0)
                     {
-                        // Intersección con borde izquierdo
                         y = y0 + (y1 - y0) * (clipRect.XMin - x0) / (x1 - x0);
                         x = clipRect.XMin;
                     }
 
-                    // Reemplazar el punto fuera con el punto de intersección
                     if (codeOut == code0)
                     {
                         x0 = x;
@@ -114,9 +104,6 @@ namespace AlgoritmosClasicos.Algorithms.LineClipping
             }
         }
 
-        /// <summary>
-        /// Calcula el código de región de un punto.
-        /// </summary>
         private int ComputeCode(int x, int y, ClipRectangle clipRect)
         {
             int code = INSIDE;

@@ -36,10 +36,8 @@ namespace AlgoritmosClasicos.Algorithms.LineDrawing
             int dx = Abs(x1 - x0);
             int dy = Abs(y1 - y0);
 
-            // Determinar si la pendiente es suave (|m| <= 1) o pronunciada (|m| > 1)
             bool isSteep = dy > dx;
 
-            // Si la línea es pronunciada, intercambiar x e y
             if (isSteep)
             {
                 Swap(ref x0, ref y0);
@@ -47,44 +45,35 @@ namespace AlgoritmosClasicos.Algorithms.LineDrawing
                 Swap(ref dx, ref dy);
             }
 
-            // Asegurar que dibujamos de izquierda a derecha
             if (x0 > x1)
             {
                 Swap(ref x0, ref x1);
                 Swap(ref y0, ref y1);
             }
 
-            // Dirección de incremento en Y
             int yStep = y0 < y1 ? 1 : -1;
 
-            // Parámetro de decisión inicial
             int decision = 2 * dy - dx;
             
-            // Incrementos del parámetro de decisión
-            int incrE = 2 * dy;           // Incremento si elegimos E (Este)
-            int incrNE = 2 * (dy - dx);   // Incremento si elegimos NE (Noreste)
+            int incrE = 2 * dy;           
+            int incrNE = 2 * (dy - dx);   
 
             int x = x0;
             int y = y0;
 
-            // Dibujar la línea
             for (int i = 0; i <= dx; i++)
             {
-                // Agregar el punto (revertir intercambio si fue necesario)
                 if (isSteep)
                     points.Add(new PixelPoint(y, x));
                 else
                     points.Add(new PixelPoint(x, y));
 
-                // Actualizar coordenadas basándose en el parámetro de decisión
                 if (decision <= 0)
                 {
-                    // Elegir píxel E (Este)
                     decision += incrE;
                 }
                 else
                 {
-                    // Elegir píxel NE (Noreste/Sureste)
                     y += yStep;
                     decision += incrNE;
                 }

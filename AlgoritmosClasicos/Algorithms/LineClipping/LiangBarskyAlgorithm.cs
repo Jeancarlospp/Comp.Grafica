@@ -35,20 +35,16 @@ namespace AlgoritmosClasicos.Algorithms.LineClipping
             float t0 = 0.0f;
             float t1 = 1.0f;
 
-            // Array de parámetros p y q para las 4 desigualdades
             float[] p = { -dx, dx, -dy, dy };
             float[] q = { x0 - clipRect.XMin, clipRect.XMax - x0, 
                          y0 - clipRect.YMin, clipRect.YMax - y0 };
 
-            // Procesar las 4 desigualdades
             for (int i = 0; i < 4; i++)
             {
                 if (p[i] == 0)
                 {
-                    // Línea paralela al borde
                     if (q[i] < 0)
                     {
-                        // Línea fuera de la ventana
                         return ClippedLine.NotVisible();
                     }
                 }
@@ -58,12 +54,10 @@ namespace AlgoritmosClasicos.Algorithms.LineClipping
 
                     if (p[i] < 0)
                     {
-                        // Línea entrando a la ventana
                         t0 = Math.Max(t0, t);
                     }
                     else
                     {
-                        // Línea saliendo de la ventana
                         t1 = Math.Min(t1, t);
                     }
                 }
@@ -71,11 +65,9 @@ namespace AlgoritmosClasicos.Algorithms.LineClipping
 
             if (t0 > t1)
             {
-                // Línea completamente fuera
                 return ClippedLine.NotVisible();
             }
 
-            // Calcular puntos de la línea recortada
             int clippedX0 = (int)Math.Round(x0 + t0 * dx);
             int clippedY0 = (int)Math.Round(y0 + t0 * dy);
             int clippedX1 = (int)Math.Round(x0 + t1 * dx);

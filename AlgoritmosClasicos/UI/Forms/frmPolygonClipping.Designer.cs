@@ -24,6 +24,9 @@ namespace AlgoritmosClasicos.UI.Forms
             this.lblAlgorithm = new System.Windows.Forms.Label();
             this.grpClipWindow = new System.Windows.Forms.GroupBox();
             this.lblWindowInfo = new System.Windows.Forms.Label();
+            this.grpShapeSelector = new System.Windows.Forms.GroupBox();
+            this.rbTriangle = new System.Windows.Forms.RadioButton();
+            this.rbRectangle = new System.Windows.Forms.RadioButton();
             this.grpDrawing = new System.Windows.Forms.GroupBox();
             this.btnCerrarPoligono = new System.Windows.Forms.Button();
             this.lblInstructions = new System.Windows.Forms.Label();
@@ -37,6 +40,7 @@ namespace AlgoritmosClasicos.UI.Forms
             this.pnlControls.SuspendLayout();
             this.grpAlgorithm.SuspendLayout();
             this.grpClipWindow.SuspendLayout();
+            this.grpShapeSelector.SuspendLayout();
             this.grpDrawing.SuspendLayout();
             this.pnlCanvas.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pctCanvas)).BeginInit();
@@ -90,6 +94,7 @@ namespace AlgoritmosClasicos.UI.Forms
             this.cmbAlgorithm.Name = "cmbAlgorithm";
             this.cmbAlgorithm.Size = new System.Drawing.Size(360, 25);
             this.cmbAlgorithm.TabIndex = 1;
+            this.cmbAlgorithm.SelectedIndexChanged += new System.EventHandler(this.cmbAlgorithm_SelectedIndexChanged);
             // 
             // lblAlgorithm
             // 
@@ -102,6 +107,7 @@ namespace AlgoritmosClasicos.UI.Forms
             // 
             // grpClipWindow
             // 
+            this.grpClipWindow.Controls.Add(this.grpShapeSelector);
             this.grpClipWindow.Controls.Add(this.lblWindowInfo);
             this.grpClipWindow.Location = new System.Drawing.Point(400, 20);
             this.grpClipWindow.Name = "grpClipWindow";
@@ -110,13 +116,49 @@ namespace AlgoritmosClasicos.UI.Forms
             this.grpClipWindow.TabStop = false;
             this.grpClipWindow.Text = "Ventana de Recorte";
             // 
+            // grpShapeSelector
+            // 
+            this.grpShapeSelector.Controls.Add(this.rbTriangle);
+            this.grpShapeSelector.Controls.Add(this.rbRectangle);
+            this.grpShapeSelector.Location = new System.Drawing.Point(200, 30);
+            this.grpShapeSelector.Name = "grpShapeSelector";
+            this.grpShapeSelector.Size = new System.Drawing.Size(145, 100);
+            this.grpShapeSelector.TabIndex = 2;
+            this.grpShapeSelector.TabStop = false;
+            this.grpShapeSelector.Text = "Forma";
+            this.grpShapeSelector.Visible = false;
+            // 
+            // rbRectangle
+            // 
+            this.rbRectangle.AutoSize = true;
+            this.rbRectangle.Checked = true;
+            this.rbRectangle.Location = new System.Drawing.Point(15, 30);
+            this.rbRectangle.Name = "rbRectangle";
+            this.rbRectangle.Size = new System.Drawing.Size(97, 21);
+            this.rbRectangle.TabIndex = 0;
+            this.rbRectangle.TabStop = true;
+            this.rbRectangle.Text = "Rectángulo";
+            this.rbRectangle.UseVisualStyleBackColor = true;
+            this.rbRectangle.CheckedChanged += new System.EventHandler(this.rbShape_CheckedChanged);
+            // 
+            // rbTriangle
+            // 
+            this.rbTriangle.AutoSize = true;
+            this.rbTriangle.Location = new System.Drawing.Point(15, 60);
+            this.rbTriangle.Name = "rbTriangle";
+            this.rbTriangle.Size = new System.Drawing.Size(85, 21);
+            this.rbTriangle.TabIndex = 1;
+            this.rbTriangle.Text = "Triángulo";
+            this.rbTriangle.UseVisualStyleBackColor = true;
+            this.rbTriangle.CheckedChanged += new System.EventHandler(this.rbShape_CheckedChanged);
+            // 
             // lblWindowInfo
             // 
             this.lblWindowInfo.Location = new System.Drawing.Point(20, 35);
             this.lblWindowInfo.Name = "lblWindowInfo";
-            this.lblWindowInfo.Size = new System.Drawing.Size(320, 95);
+            this.lblWindowInfo.Size = new System.Drawing.Size(165, 95);
             this.lblWindowInfo.TabIndex = 0;
-            this.lblWindowInfo.Text = "La figura que grafique se recortará en el area de recorte definida (Rectángulo Rojo)";
+            this.lblWindowInfo.Text = "Rectangulo:\r\nX: 30 - 120\r\nY: 20 - 60\r\n\r\nTriangulo:\r\nV1: (30,20)\r\nV2: (75,70)\r\nV3: (120,20)";
             // 
             // grpDrawing
             // 
@@ -246,6 +288,8 @@ namespace AlgoritmosClasicos.UI.Forms
             this.grpAlgorithm.ResumeLayout(false);
             this.grpAlgorithm.PerformLayout();
             this.grpClipWindow.ResumeLayout(false);
+            this.grpShapeSelector.ResumeLayout(false);
+            this.grpShapeSelector.PerformLayout();
             this.grpDrawing.ResumeLayout(false);
             this.pnlCanvas.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.pctCanvas)).BeginInit();
@@ -262,6 +306,9 @@ namespace AlgoritmosClasicos.UI.Forms
         private System.Windows.Forms.Label lblInstructions;
         private System.Windows.Forms.Button btnClear;
         private System.Windows.Forms.GroupBox grpClipWindow;
+        private System.Windows.Forms.GroupBox grpShapeSelector;
+        private System.Windows.Forms.RadioButton rbTriangle;
+        private System.Windows.Forms.RadioButton rbRectangle;
         private System.Windows.Forms.Label lblWindowInfo;
         private System.Windows.Forms.GroupBox grpAlgorithm;
         private System.Windows.Forms.Button btnAplicarRecorte;

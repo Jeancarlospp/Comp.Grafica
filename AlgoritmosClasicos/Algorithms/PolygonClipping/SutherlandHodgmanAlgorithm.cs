@@ -26,21 +26,19 @@ namespace AlgoritmosClasicos.Algorithms.PolygonClipping
         {
             List<PixelPoint> outputList = new List<PixelPoint>(subjectPolygon.Vertices);
 
-            // Recortar contra cada borde: izquierda, derecha, inferior, superior
-            outputList = ClipAgainstEdge(outputList, 0, clipRectangle); // Izquierda
-            outputList = ClipAgainstEdge(outputList, 1, clipRectangle); // Derecha
-            outputList = ClipAgainstEdge(outputList, 2, clipRectangle); // Inferior
-            outputList = ClipAgainstEdge(outputList, 3, clipRectangle); // Superior
+
+            outputList = ClipAgainstEdge(outputList, 0, clipRectangle); 
+            outputList = ClipAgainstEdge(outputList, 1, clipRectangle); 
+            outputList = ClipAgainstEdge(outputList, 2, clipRectangle); 
+            outputList = ClipAgainstEdge(outputList, 3, clipRectangle); 
 
             if (outputList.Count < 3)
-                return null; // Polígono completamente fuera
+                return null; 
 
             return new Polygon(outputList);
         }
 
-        /// <summary>
-        /// Recorta una lista de vértices contra un borde específico.
-        /// </summary>
+
         private List<PixelPoint> ClipAgainstEdge(List<PixelPoint> inputList, int edge, ClipRectangle rect)
         {
             List<PixelPoint> outputList = new List<PixelPoint>();
@@ -59,15 +57,15 @@ namespace AlgoritmosClasicos.Algorithms.PolygonClipping
                 {
                     if (!prevInside)
                     {
-                        // Entrando: agregar intersección
+
                         outputList.Add(ComputeIntersection(prevVertex, currentVertex, edge, rect));
                     }
-                    // Agregar vértice actual
+
                     outputList.Add(currentVertex);
                 }
                 else if (prevInside)
                 {
-                    // Saliendo: agregar intersección
+
                     outputList.Add(ComputeIntersection(prevVertex, currentVertex, edge, rect));
                 }
 
@@ -77,17 +75,14 @@ namespace AlgoritmosClasicos.Algorithms.PolygonClipping
             return outputList;
         }
 
-        /// <summary>
-        /// Verifica si un punto está dentro de un borde específico.
-        /// </summary>
         private bool IsInsideEdge(PixelPoint point, int edge, ClipRectangle rect)
         {
             switch (edge)
             {
-                case 0: return point.X >= rect.XMin; // Izquierda
-                case 1: return point.X <= rect.XMax; // Derecha
-                case 2: return point.Y >= rect.YMin; // Inferior
-                case 3: return point.Y <= rect.YMax; // Superior
+                case 0: return point.X >= rect.XMin; 
+                case 1: return point.X <= rect.XMax; 
+                case 2: return point.Y >= rect.YMin; 
+                case 3: return point.Y <= rect.YMax; 
                 default: return false;
             }
         }

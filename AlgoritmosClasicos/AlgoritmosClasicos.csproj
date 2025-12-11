@@ -59,8 +59,8 @@
     <Compile Include="Algorithms\LineDrawing\DDAAlgorithm.cs" />
     <Compile Include="Algorithms\LineDrawing\MidpointLineAlgorithm.cs" />
     <Compile Include="Algorithms\PolygonClipping\CyrusBeckAlgorithm.cs" />
+    <Compile Include="Algorithms\PolygonClipping\LiangBarskyPolygonAlgorithm.cs" />
     <Compile Include="Algorithms\PolygonClipping\SutherlandHodgmanAlgorithm.cs" />
-    <Compile Include="Algorithms\PolygonClipping\WeilerAthertonAlgorithm.cs" />
     <Compile Include="Core\Algorithms\CircleDrawingAlgorithm.cs" />
     <Compile Include="Core\Algorithms\FillAlgorithm.cs" />
     <Compile Include="Core\Algorithms\LineClippingAlgorithm.cs" />
@@ -75,6 +75,7 @@
     <Compile Include="Core\Models\CanvasGrid.cs" />
     <Compile Include="Core\Models\ClippedLine.cs" />
     <Compile Include="Core\Models\ClipRectangle.cs" />
+    <Compile Include="Core\Models\ClipShape.cs" />
     <Compile Include="Core\Models\PixelPoint.cs" />
     <Compile Include="Core\Models\Polygon.cs" />
     <Compile Include="Core\Rendering\PixelRenderer.cs" />

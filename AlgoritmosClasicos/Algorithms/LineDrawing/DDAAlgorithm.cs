@@ -27,31 +27,25 @@ namespace AlgoritmosClasicos.Algorithms.LineDrawing
         {
             var points = new List<PixelPoint>();
 
-            // Calcular diferencias
             int dx = end.X - start.X;
             int dy = end.Y - start.Y;
 
-            // Determinar el número de pasos (el mayor entre dx y dy)
             int steps = Math.Max(Abs(dx), Abs(dy));
 
-            // Calcular incrementos
+
             float xIncrement = (float)dx / steps;
             float yIncrement = (float)dy / steps;
 
-            // Inicializar coordenadas flotantes
             float x = start.X;
             float y = start.Y;
 
-            // Agregar el punto inicial
             points.Add(new PixelPoint((int)Math.Round(x), (int)Math.Round(y)));
 
-            // Iterar y calcular cada punto
             for (int i = 1; i <= steps; i++)
             {
                 x += xIncrement;
                 y += yIncrement;
 
-                // Redondear y agregar el punto
                 points.Add(new PixelPoint((int)Math.Round(x), (int)Math.Round(y)));
             }
 

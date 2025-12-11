@@ -34,14 +34,11 @@ namespace AlgoritmosClasicos.Algorithms.Fill
             var filledPoints = new List<PixelPoint>();
             var stack = new Stack<PixelPoint>();
 
-            // Obtener el color objetivo
             Color targetColor = grid[startPoint.X, startPoint.Y];
 
-            // Si el color objetivo es igual al color de relleno, no hacer nada
             if (ColorsEqual(targetColor, fillColor))
                 return filledPoints;
 
-            // Iniciar con el punto semilla
             stack.Push(startPoint);
 
             while (stack.Count > 0)
@@ -50,38 +47,32 @@ namespace AlgoritmosClasicos.Algorithms.Fill
                 int x = point.X;
                 int y = point.Y;
 
-                // Si el punto ya fue rellenado o no es del color objetivo, continuar
                 if (!ColorsEqual(grid[x, y], targetColor))
                     continue;
 
-                // Encontrar el extremo izquierdo de la scanline
                 int leftX = x;
                 while (leftX > 0 && ColorsEqual(grid[leftX - 1, y], targetColor))
                 {
                     leftX--;
                 }
 
-                // Encontrar el extremo derecho de la scanline
                 int rightX = x;
                 while (rightX < width - 1 && ColorsEqual(grid[rightX + 1, y], targetColor))
                 {
                     rightX++;
                 }
 
-                // Rellenar la scanline horizontal completa
                 for (int i = leftX; i <= rightX; i++)
                 {
                     grid[i, y] = fillColor;
                     filledPoints.Add(new PixelPoint(i, y));
                 }
 
-                // Buscar segmentos en la línea superior
                 if (y + 1 < height)
                 {
                     ScanLine(grid, stack, leftX, rightX, y + 1, targetColor, width, height);
                 }
 
-                // Buscar segmentos en la línea inferior
                 if (y - 1 >= 0)
                 {
                     ScanLine(grid, stack, leftX, rightX, y - 1, targetColor, width, height);
@@ -91,9 +82,6 @@ namespace AlgoritmosClasicos.Algorithms.Fill
             return filledPoints;
         }
 
-        /// <summary>
-        /// Busca y agrega segmentos de una scanline a la pila.
-        /// </summary>
         private void ScanLine(Color[,] grid, Stack<PixelPoint> stack, int leftX, int rightX, 
             int y, Color targetColor, int width, int height)
         {
