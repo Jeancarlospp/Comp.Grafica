@@ -128,11 +128,11 @@ namespace CurvasBezierYBSpline.Formularios
                 Location = new Point(50, 130),
                 Size = new Size(700, 220),
                 Text = "Bienvenido al visualizador de curvas paramétricas.\n\n" +
-                       "📐 Curvas de Bézier:\n" +
+                       "Curvas de Bézier:\n" +
                        "• Pasan por los puntos extremos\n" +
                        "• Control global (mover un punto afecta toda la curva)\n" +
                        "• Ideales para trazos simples y diseño gráfico\n\n" +
-                       "📊 Curvas B-Spline:\n" +
+                       "Curvas B-Spline:\n" +
                        "• NO pasan por los puntos de control (excepto cerradas)\n" +
                        "• Control local (mover un punto afecta solo una zona)\n" +
                        "• Más flexibles para modelado CAD y animación\n\n" +
