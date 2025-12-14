@@ -1,6 +1,6 @@
 ﻿namespace CurvasBezierYBSpline.Formularios
 {
-    partial class FrmHome
+    partial class FrmBSpline
     {
         /// <summary>
         /// Required designer variable.
@@ -13,9 +13,13 @@
         /// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
         protected override void Dispose(bool disposing)
         {
-            if (disposing && (components != null))
+            if (disposing)
             {
-                components.Dispose();
+                LiberarRecursosGraficos();
+                if (components != null)
+                {
+                    components.Dispose();
+                }
             }
             base.Dispose(disposing);
         }
@@ -30,19 +34,21 @@
         {
             this.SuspendLayout();
             // 
-            // FrmHome
+            // FrmBSpline
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(900, 600);
-            this.Name = "FrmHome";
-            this.Text = "Curvas de Bézier y B-Spline";
-            this.Load += new System.EventHandler(this.FrmHome_Load);
+            this.ClientSize = new System.Drawing.Size(1200, 700);
+            this.Name = "FrmBSpline";
+            this.Text = "Curvas B-Spline";
             this.ResumeLayout(false);
 
         }
 
         #endregion
+
+        private void FrmBSpline_Load(object sender, System.EventArgs e)
+        {
+        }
     }
 }
-

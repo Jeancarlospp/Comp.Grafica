@@ -51,12 +51,23 @@
     <Compile Include="BezierCubica.cs" />
     <Compile Include="BezierLineal.cs" />
     <Compile Include="BezierN.cs" />
+    <Compile Include="BSplineCuadraticaAbierta.cs" />
+    <Compile Include="BSplineCubicaAbierta.cs" />
+    <Compile Include="BSplineCubicaCerrada.cs" />
+    <Compile Include="BSplineNPuntos.cs" />
     <Compile Include="CurvaBezier.cs" />
+    <Compile Include="CurvaBSpline.cs" />
     <Compile Include="FrmBezier.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="FrmBezier.Designer.cs">
       <DependentUpon>FrmBezier.cs</DependentUpon>
+    </Compile>
+    <Compile Include="FrmBSpline.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FrmBSpline.Designer.cs">
+      <DependentUpon>FrmBSpline.cs</DependentUpon>
     </Compile>
     <Compile Include="FrmHome.cs">
       <SubType>Form</SubType>
@@ -70,6 +81,9 @@
     <Compile Include="RenderizadorCurvas.cs" />
     <EmbeddedResource Include="FrmBezier.resx">
       <DependentUpon>FrmBezier.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FrmBSpline.resx">
+      <DependentUpon>FrmBSpline.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="FrmHome.resx">
       <DependentUpon>FrmHome.cs</DependentUpon>
