@@ -12,7 +12,7 @@ namespace CurvasBezierYBSpline.Formularios
     {
         private CurvaBezier curvaActual;
         private AnimadorBezier animador;
-        private Panel pnlCanvas;
+        private DoubleBufferedPanel pnlCanvas;
         private TrackBar trbParametroT;
         private Button btnIniciarAnimacion;
         private Button btnReiniciar;
@@ -36,14 +36,45 @@ namespace CurvasBezierYBSpline.Formularios
         private readonly Color colorLineaConstruccion2 = Color.FromArgb(255, 180, 150);
         private readonly Color colorPuntoAnimado = Color.FromArgb(255, 100, 100);
 
+        // Pens y brushes reutilizables para mejor performance
+        private Pen penPoligono;
+        private Pen penCurva;
+        private Pen penLineaConstruccion1;
+        private Pen penLineaConstruccion2;
+        private SolidBrush brushPuntoAnimado;
+        private Pen penPuntoAnimado;
+
         public FrmBezier(CurvaBezier curva)
         {
             InitializeComponent();
             curvaActual = curva;
             animador = new AnimadorBezier();
             animador.CambioParametro += Animador_CambioParametro;
+            InicializarRecursosGraficos();
             ConfigurarFormulario();
             InicializarControles();
+        }
+
+        private void InicializarRecursosGraficos()
+        {
+            // Crear pens y brushes reutilizables
+            penPoligono = new Pen(colorPoligono, 1.5f) { DashStyle = DashStyle.Dash };
+            penCurva = new Pen(colorCurva, 3f);
+            penLineaConstruccion1 = new Pen(colorLineaConstruccion1, 2f);
+            penLineaConstruccion2 = new Pen(colorLineaConstruccion2, 1.7f);
+            brushPuntoAnimado = new SolidBrush(colorPuntoAnimado);
+            penPuntoAnimado = new Pen(Color.DarkRed, 2f);
+        }
+
+        private void LiberarRecursosGraficos()
+        {
+            // Liberar recursos gráficos
+            penPoligono?.Dispose();
+            penCurva?.Dispose();
+            penLineaConstruccion1?.Dispose();
+            penLineaConstruccion2?.Dispose();
+            brushPuntoAnimado?.Dispose();
+            penPuntoAnimado?.Dispose();
         }
 
         private void ConfigurarFormulario()
@@ -56,8 +87,8 @@ namespace CurvasBezierYBSpline.Formularios
 
         private void InicializarControles()
         {
-            // Panel de canvas
-            pnlCanvas = new Panel
+            // Panel de canvas con doble buffer
+            pnlCanvas = new DoubleBufferedPanel
             {
                 Location = new Point(20, 20),
                 Size = new Size(900, 600),
@@ -241,6 +272,8 @@ namespace CurvasBezierYBSpline.Formularios
         {
             Graphics g = e.Graphics;
             g.SmoothingMode = SmoothingMode.AntiAlias;
+            g.InterpolationMode = InterpolationMode.HighQualityBicubic;
+            g.CompositingQuality = CompositingQuality.HighQuality;
 
             var puntos = curvaActual.ObtenerPuntosControl();
 
@@ -249,8 +282,7 @@ namespace CurvasBezierYBSpline.Formularios
             {
                 for (int i = 0; i < puntos.Count - 1; i++)
                 {
-                    g.DrawLine(new Pen(colorPoligono, 1.5f) { DashStyle = DashStyle.Dash },
-                              puntos[i].ToPointF(), puntos[i + 1].ToPointF());
+                    g.DrawLine(penPoligono, puntos[i].ToPointF(), puntos[i + 1].ToPointF());
                 }
             }
 
@@ -263,12 +295,11 @@ namespace CurvasBezierYBSpline.Formularios
                 // Dibujar niveles de construcción
                 for (int nivel = 1; nivel < niveles.Count; nivel++)
                 {
-                    Color colorLinea = nivel == 1 ? colorLineaConstruccion1 : colorLineaConstruccion2;
-                    float grosor = 2f - (nivel * 0.3f);
+                    Pen penLinea = nivel == 1 ? penLineaConstruccion1 : penLineaConstruccion2;
 
                     for (int i = 0; i < niveles[nivel].Count - 1; i++)
                     {
-                        g.DrawLine(new Pen(colorLinea, grosor),
+                        g.DrawLine(penLinea,
                                   niveles[nivel][i].ToPointF(),
                                   niveles[nivel][i + 1].ToPointF());
                     }
@@ -287,7 +318,7 @@ namespace CurvasBezierYBSpline.Formularios
                 var puntosCurva = curvaActual.ObtenerPuntosCurva();
                 if (puntosCurva.Count > 1)
                 {
-                    g.DrawCurve(new Pen(colorCurva, 3f), puntosCurva.ToArray());
+                    g.DrawCurve(penCurva, puntosCurva.ToArray());
                 }
 
                 // Dibujar el punto actual en la curva
@@ -295,9 +326,9 @@ namespace CurvasBezierYBSpline.Formularios
                 Punto2D puntoActual = curvaActual.CalcularPuntoEnCurva(t);
                 if (puntoActual != null)
                 {
-                    g.FillEllipse(new SolidBrush(colorPuntoAnimado),
+                    g.FillEllipse(brushPuntoAnimado,
                                  puntoActual.X - 5, puntoActual.Y - 5, 10, 10);
-                    g.DrawEllipse(new Pen(Color.DarkRed, 2f),
+                    g.DrawEllipse(penPuntoAnimado,
                                  puntoActual.X - 5, puntoActual.Y - 5, 10, 10);
                 }
             }
@@ -425,6 +456,20 @@ namespace CurvasBezierYBSpline.Formularios
                 btnIniciarAnimacion.Text = "▶ Animar";
                 btnIniciarAnimacion.BackColor = Color.FromArgb(100, 180, 100);
             }
+        }
+    }
+
+    // Panel personalizado con doble buffer habilitado
+    public class DoubleBufferedPanel : Panel
+    {
+        public DoubleBufferedPanel()
+        {
+            this.SetStyle(
+                ControlStyles.UserPaint |
+                ControlStyles.AllPaintingInWmPaint |
+                ControlStyles.OptimizedDoubleBuffer,
+                true);
+            this.UpdateStyles();
         }
     }
 }
